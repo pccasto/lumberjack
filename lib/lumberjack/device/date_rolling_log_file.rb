@@ -12,7 +12,6 @@ module Lumberjack
       # with the <tt>:roll</tt> option which may contain a value of <tt>:daily</tt>, <tt>:weekly</tt>,
       # or <tt>:monthly</tt>.
       def initialize(path, options = {})
-        @file_date = Date.today
         if options[:roll] && options[:roll].to_s.match(/(daily)|(weekly)|(monthly)/i)
           @roll_period = $~[0].downcase.to_sym
           options.delete(:roll)
@@ -20,12 +19,14 @@ module Lumberjack
           raise ArgumentError.new("illegal value for :roll (#{options[:roll].inspect})")
         end
         super
+        @file_date = stream.respond_to?(:stat) ? stream.stat.mtime.to_date : Date.today
       end
 
       def archive_file_suffix
         case @roll_period
         when :weekly
-          "#{@file_date.strftime('week-of-%Y-%m-%d')}"
+          eow = @file_date + (7 - @file_date.cwday) # timestamp reflects end of the week
+          "#{eow.strftime('week-of-%Y-%m-%d')}"
         when :monthly
           "#{@file_date.strftime('%Y-%m')}"
         else

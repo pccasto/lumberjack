@@ -1,3 +1,9 @@
+1.0.5.pcc.1
+
+- Fixed bug for daily rolling when process does not run/log over end-of-day boundary (e.g. not as daemon).
+- Fixed bug for weekly rolling when process does not run/log over end-of-week boundary.
+
+
 1.0.4
 
 - Add ability to supply a unit of work id for a block instead of having one generated every time.
